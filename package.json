@@ -1,0 +1,52 @@
+{
+  "name": "prozorro-mcp-server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MCP server for searching Prozorro tenders - Ukrainian government procurement data",
+  "main": "build/index.js",
+  "bin": {
+    "prozorro-mcp-server": "build/index.js"
+  },
+  "files": [
+    "build",
+    "README.md",
+    "README.uk.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "prozorro",
+    "tenders",
+    "ukraine",
+    "procurement",
+    "model-context-protocol",
+    "claude",
+    "ai"
+  ],
+  "author": "Vladyslav Mykhailyshyn",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VladyslavMykhailyshyn/prozorro-mcp-server.git"
+  },
+  "homepage": "https://github.com/VladyslavMykhailyshyn/prozorro-mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/VladyslavMykhailyshyn/prozorro-mcp-server/issues"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.1",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "zod": "^3.24.1",
+    "zod-to-json-schema": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
+  }
+}
