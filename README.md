@@ -2,7 +2,7 @@
 
 A Model Context Protocol (MCP) server that provides AI models with seamless access to Ukrainian government procurement data from [Prozorro](https://prozorro.gov.ua/) - Ukraine's public procurement system.
 
-**Providing all the available features requires to have a proxy server and database, so right now MCP API is not available publicly. To get API URL and API token, please contact the author.**
+**❗❗❗ Providing all the available features requires to have a proxy server and database, so right now MCP API is not available publicly. To get API URL and API token, please contact the author.**
 
 ## Features
 
