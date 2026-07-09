@@ -6,7 +6,9 @@ A Model Context Protocol (MCP) server that provides AI models with seamless acce
 
 ## Features
 
-- **🔍 Search Tenders**: Advanced search capabilities by EDRPOU code, legal name, or date ranges
+- **🔍 Search Tenders**: Advanced search capabilities by EDRPOU code, legal name, tenderer/supplier name, or date ranges
+- **↕️ Server-side Sorting**: Sort results by amount or last-modified date, so "biggest"/"latest" queries return the actual top results, not an arbitrary page
+- **📄 Pagination**: Page through result sets larger than 100 rows via `offset`
 - **⚡ Fast**: Direct API integration with Prozorro's public procurement database
 - **🛠️ Easy Integration**: Simple setup with Claude Desktop and other MCP clients
 
@@ -16,13 +18,21 @@ A Model Context Protocol (MCP) server that provides AI models with seamless acce
 Searches for government tenders based on various criteria (Right now data are available only for 2025 year).
 
 **Parameters:**
-- `EDRPOUCode` (string, optional): The unique identifier code of the organization (Ukrainian tax ID)
-- `legalName` (string, optional): A substring to match against the organization's legal name
+- `EDRPOUCode` (string, optional): The unique identifier code of the procuring organization (Ukrainian tax ID)
+- `legalName` (string, optional): A substring to match against the procuring organization's legal name
+- `tendererName` (string, optional): A substring to match against the tenderer/supplier/bidder's name (not the procuring entity). Use this to find individual entrepreneurs (FOPs) as bidders — see [Known Limitations](#known-limitations) below.
 - `dateFrom` (string, optional): Start date for the search (ISO 8601 format, e.g., `2025-01-01`)
 - `dateTo` (string, optional): End date for the search (ISO 8601 format, e.g., `2025-12-31`)
-- `limit` (number, optional): Maximum number of records to return (default: 100, max: 1000)
+- `sortBy` (string, optional): One of `amount_desc`, `amount_asc`, `dateModified_desc`, `dateModified_asc`. Sorting is applied server-side across the full matching dataset before pagination, so e.g. `amount_desc` reliably returns the biggest tenders even if there are thousands of matches.
+- `offset` (number, optional): Number of records to skip, for paging beyond the first `limit` results (default: 0)
+- `includeTotal` (boolean, optional): If true, the response includes `total_count` — the true total number of matching results across all pages. Costs an extra query server-side, so it's opt-in; omit it for routine paging (default: false)
+- `limit` (number, optional): Maximum number of records to return per page (default: 100, max: 100 — the server hard-caps at 100 regardless of the value requested; use `offset` to fetch additional pages)
 
-**Returns:** Array of tender objects with detailed information including tender ID, title, organization details, dates, and procurement status.
+**Returns:** An object with `data` (array of tender objects with detailed information including tender ID, title, organization details, dates, and procurement status), plus `count` (rows in this page), `total_count` (true total matching the filters across all pages — `null` unless `includeTotal` was set), `limit_applied`, `offset_applied`, and `sort_applied`.
+
+## Known Limitations
+
+- **Individual entrepreneurs (FOP)**: Prozorro's public data source masks individual-entrepreneur identifier IDs (EDRPOU-style codes) to `0000000000` for privacy. This means `EDRPOUCode`/tenderer-ID-based search does **not** reliably find FOPs. Use `tendererName` (substring match) instead — FOPs almost always appear as bidders/suppliers (tenderers), not as the procuring entity.
 
 ## Installation
 
@@ -156,6 +166,28 @@ To obtain API credentials and URL for Prozorro:
 1. Use search_tenders with dateFrom and dateTo parameters
 2. Optionally filter by organization name using legalName
 3. Limit results for better performance
+```
+
+### Workflow 3: Find the Biggest or Most Recent Tenders
+
+```
+1. Use search_tenders with sortBy: "amount_desc" to get the biggest tenders by value,
+   or sortBy: "dateModified_desc" for the most recently updated tenders
+2. Combine with legalName/EDRPOUCode/tendererName/date filters as needed
+3. The top results are guaranteed to be the actual top matches, not just an
+   arbitrary page of the full result set
+```
+
+### Workflow 4: Paginate Through Large Result Sets
+
+```
+1. Call search_tenders with limit: 100 and offset: 0
+2. Repeat the call with the same filters/sortBy, increasing offset by 100 each
+   time, until a page comes back with fewer than 100 results
+3. If you need to know the total number of matches upfront (e.g. to answer
+   "how many tenders in total"), pass includeTotal: true and read total_count
+   from the response — leave it off for routine paging, since it costs an
+   extra query
 ```
 
 ## Troubleshooting

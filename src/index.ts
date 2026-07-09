@@ -31,7 +31,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         tools: [
             {
                 name: "search_tenders",
-                description: "Search for government tenders by EDRPOUCode code, legal name, or date range.",
+                description: "Search for government tenders by EDRPOUCode, legal name, tenderer/supplier name, or date range. Supports sortBy (e.g. 'amount_desc' for the biggest tenders, 'dateModified_desc' for the most recent) and offset-based pagination beyond 100 rows. Note: individual-entrepreneur (FOP) tenderers can't be reliably found by EDRPOU code due to upstream ID masking — search by tendererName instead.",
                 inputSchema: zodToJsonSchema(SearchTendersSchema) as any,
             },
         ],
