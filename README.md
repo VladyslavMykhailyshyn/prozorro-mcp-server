@@ -261,3 +261,66 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Contact
 
 For issues and questions, please use the [GitHub Issues](https://github.com/VladyslavMykhailyshyn/prozorro-mcp-server/issues) page.
+
+## Tool Call Examples
+
+Example `search_tenders` arguments for common queries.
+
+**Find all tenders from a specific organization:**
+```json
+{
+  "EDRPOUCode": "21560045"
+}
+```
+
+**Find tenders by organization name within a date range:**
+```json
+{
+  "legalName": "Укрпошта",
+  "dateFrom": "2025-01-01",
+  "dateTo": "2025-06-30"
+}
+```
+
+**Find the biggest tenders by value:**
+```json
+{
+  "legalName": "Укрпошта",
+  "sortBy": "amount_desc",
+  "limit": 100
+}
+```
+
+**Find the most recently updated tenders:**
+```json
+{
+  "sortBy": "dateModified_desc",
+  "limit": 20
+}
+```
+
+**Find an individual entrepreneur (FOP) as a bidder/supplier:**
+```json
+{
+  "tendererName": "Петренко Іван Іванович"
+}
+```
+
+**Page through a large result set (second page, 100 rows each):**
+```json
+{
+  "legalName": "Укрпошта",
+  "sortBy": "amount_desc",
+  "limit": 100,
+  "offset": 100
+}
+```
+
+**Get the true total number of matches, not just the current page:**
+```json
+{
+  "legalName": "Укрпошта",
+  "includeTotal": true
+}
+```
+Response includes `"total_count": 4832` alongside `"count"` (rows in this page) and `"data"`.
